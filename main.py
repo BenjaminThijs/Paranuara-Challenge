@@ -1,3 +1,4 @@
+from tools.exceptions import NoSuchNameException
 from tools.companies import Companies
 from tools.people import People
 
@@ -9,17 +10,26 @@ app = Flask(__name__)
 
 @app.get("/company/<company>")
 def get_employees_for_company(company: str):
-    company_id = companies.get_company_by_name(name=company).index
-    employees = people.get_employees(company_id=company_id)
+    try:
+        company_id = companies.get_company_by_name(name=company).index
+        employees = people.get_employees(company_id=company_id)
 
-    code = 200 if len(employees) > 0 else 204
+        code = 200 if len(employees) > 0 else 204
+    except:
+        code = 204
 
-    # TODO: what to return here?
+        employees = []
+
+    # NOTE: since it wasn't mentioned how to return these employees
+    # NOTE: we simply return their names
     return ({'employees': [e.name for e in employees]}, code)
 
 @app.get("/mutualfriends/<person1_name>/<person2_name>")
 def get_mutual_friends(person1_name: str, person2_name: str):
-    person1, person2 = people.get_person_by_name(person1_name), people.get_person_by_name(person2_name)
+    try:
+        person1, person2 = people.get_person_by_name(person1_name), people.get_person_by_name(person2_name)
+    except NoSuchNameException:
+        return {}, 204
 
     # mutual friends indexes
     mutual_friends = set(person1.friend_indeces).intersection(person2.friend_indeces)
@@ -27,8 +37,8 @@ def get_mutual_friends(person1_name: str, person2_name: str):
     # mutual friends
     mutual_friends = [people[i] for i in mutual_friends]
 
-    # mutual friends that have brown eyes and are alive
-    mutual_friends = filter(lambda p: p.eyeColor == "brown" and p.has_died is False, mutual_friends)
+    # mutual friends that have brown eyes and are alive (and are not one of the two people)
+    mutual_friends = filter(lambda p: p.eyeColor == "brown" and p.has_died is False and p not in (person1, person2), mutual_friends)
 
     return {
         "person1": person1.temp(),
@@ -38,7 +48,10 @@ def get_mutual_friends(person1_name: str, person2_name: str):
 
 @app.get("/person/<name>")
 def get_person_info(name: str):
-    person = people.get_person_by_name(name=name)
+    try:
+        person = people.get_person_by_name(name=name)
+    except NoSuchNameException:
+        return {}, 204
 
     fruits = [
         "orange", "apple", "banana", "strawberry"
