@@ -1,4 +1,5 @@
 from .dto.company import Company
+from .exceptions import NoSuchNameException
 
 import json
 
@@ -16,4 +17,4 @@ class Companies:
             if company.company == name:
                 return company
         else:
-            raise Exception("No such company exists")
+            raise NoSuchNameException(f"There is no company by the name '{name}'")
