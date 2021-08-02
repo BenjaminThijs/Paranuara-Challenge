@@ -5,7 +5,7 @@ setup(
     version='1.0',
     author='Benjamin Thijs',
     author_email='thijsbenjamin@live.be',
-    packages=[
+    install_requires=[
         'Flask', 'parameterized', 'requests'
     ]
 )
