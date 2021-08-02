@@ -51,7 +51,7 @@ def get_person_info(name: str):
     try:
         person = people.get_person_by_name(name=name)
     except NoSuchNameException:
-        return {"error", "no such name"}, 204
+        return {"error": "no such name"}, 204
 
     fruits = [
         "orange", "apple", "banana", "strawberry"
