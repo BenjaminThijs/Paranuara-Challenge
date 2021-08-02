@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Paranuara Challenge</title>
+        <meta charset="UTF-8">
+    </head>
+
+    <body>
+        <!--This entire thing is quick and dirty, just to allow some type of front-end to be present-->
+        <!--No styling included either, since that's not really the point of this task (in my opinion)-->
+        <div>
+            <label for="company_name">Company name:</label>
+            <input type="text" id="company_name" name="company_name" value="PERMADYNE">
+
+            <button onclick="companyButtonClicked()">Get employees</button>
+        </div>
+        <hr>
+
+        <div>
+            <label for="person1_name">Person 1 name:</label>
+            <input type="text" id="person1_name" name="person1_name" value="Henderson Petty">
+            <br>
+
+            <label for="person2_name">Person 2 name:</label>
+            <input type="text" id="person2_name" name="person2_name" value="Cote Booth">
+            <br>
+            <br>
+
+            <button onclick="mutualFriendsButtonClicked()">Get mutual friends</button>
+        </div>
+        <hr>
+
+        <div>
+            <label for="person_name">Person name:</label>
+            <input type="text" id="person_name" name="person_name" value="Eliza Spence">
+
+            <button onclick="personButtonClicked()">Get person info</button>
+        </div>
+
+        <script>
+            const baseURL = "http://localhost:5000"
+
+            function companyButtonClicked() {
+                window.location.href = baseURL + "/company/" + document.getElementById("company_name").value;
+            }
+
+            function mutualFriendsButtonClicked() {
+                window.location.href = baseURL + "/mutualfriends/" + document.getElementById("person1_name").value + "/" + document.getElementById("person2_name").value;
+            }
+
+            function personButtonClicked() {
+                window.location.href = baseURL + "/person/" + document.getElementById("person_name").value;
+            }
+        </script>
+    </body>
+</html>
