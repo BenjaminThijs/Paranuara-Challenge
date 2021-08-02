@@ -1,4 +1,5 @@
 from .dto.person import Person
+from .exceptions import NoSuchNameException
 
 import json
 
@@ -17,6 +18,9 @@ class People:
     def get_employees(self, company_id: int) -> list[Person]:
         # TODO: just make it a generator instead?
         # cast it to list to prevent issues with not expecting generator
+        if type(company_id) is not int:
+            raise TypeError(f"company id should be an integer, not '{type(company_id)}'")
+        
         return list(filter(lambda p: p.company_id == company_id, self.list))
 
     def get_person_by_name(self, name: str) -> Person:
@@ -24,4 +28,4 @@ class People:
             if person.name == name:
                 return person
         else:
-            raise Exception("No such person exists")
+            raise NoSuchNameException("No such person exists")
