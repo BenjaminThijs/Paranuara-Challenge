@@ -29,7 +29,7 @@ def get_mutual_friends(person1_name: str, person2_name: str):
     try:
         person1, person2 = people.get_person_by_name(person1_name), people.get_person_by_name(person2_name)
     except NoSuchNameException:
-        return {}, 204
+        return {"error": "no such name"}, 204
 
     # mutual friends indexes
     mutual_friends = set(person1.friend_indeces).intersection(person2.friend_indeces)
@@ -51,7 +51,7 @@ def get_person_info(name: str):
     try:
         person = people.get_person_by_name(name=name)
     except NoSuchNameException:
-        return {}, 204
+        return {"error", "no such name"}, 204
 
     fruits = [
         "orange", "apple", "banana", "strawberry"
