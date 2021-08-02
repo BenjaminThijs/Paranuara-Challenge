@@ -58,4 +58,5 @@ If the test fails, a capital letter "F" will be printed. \
 If an error occurs, a capital letter "E" will be printed. \
 When all the tests have run, you will get a really short summary of the results.
 
-The tests should take about 30 seconds in total.
+The tests should take about 30 seconds in total. \
+These tests include testing the results the API gives, as well as unittests for the written back-end code.
