@@ -1,59 +1,44 @@
-from flask import Flask
-import json
+from tools.companies import Companies
+from tools.people import People
 
+from flask import Flask
+
+companies = Companies("resources/companies.json")
+people = People("resources/people.json")
 app = Flask(__name__)
 
 @app.get("/company/<company>")
-def company(company: str):
-    with open('resources/companies.json', 'r') as companies_file:
-        try:
-            company_id = next(filter(lambda c: c['company'] == company, json.load(companies_file)))["index"]
-        except StopIteration:
-            return None
+def get_employees_for_company(company: str):
+    company_id = companies.get_company_by_name(name=company).index
+    employees = people.get_employees(company_id=company_id)
 
-    with open('resources/people.json', 'r') as people_file:
-        people = filter(lambda p: p["company_id"] == company_id, json.load(people_file))
-
-    employees = list(people)
     code = 200 if len(employees) > 0 else 204
-    return ({'employees': employees}, code)
 
-@app.get("/mutualfriends/<person1>/<person2>")
-def common(person1: str, person2: str):
-    with open("resources/people.json", "r") as people_json:
-        people = json.load(people_json)
+    # TODO: what to return here?
+    return ({'employees': [e.name for e in employees]}, code)
 
-    person1 = next(filter(lambda p: p["name"] == person1, people))
-    person2 = next(filter(lambda p: p["name"] == person2, people))
-
-    friends = lambda p: [f["index"] for f in p["friends"]]
+@app.get("/mutualfriends/<person1_name>/<person2_name>")
+def get_mutual_friends(person1_name: str, person2_name: str):
+    person1, person2 = people.get_person_by_name(person1_name), people.get_person_by_name(person2_name)
 
     # mutual friends indexes
-    mutual_friends = set(friends(person1)).intersection(friends(person2))
+    mutual_friends = set(person1.friend_indeces).intersection(person2.friend_indeces)
 
     # mutual friends
     mutual_friends = [people[i] for i in mutual_friends]
 
     # mutual friends that have brown eyes and are alive
-    mutual_friends = filter(lambda p: p["eyeColor"] == "brown" and p["has_died"] is False, mutual_friends)
-
-    cast = lambda p: {"name": p["name"], "age": p["age"], "address": p["address"], "phone": p["phone"]}
+    mutual_friends = filter(lambda p: p.eyeColor == "brown" and p.has_died is False, mutual_friends)
 
     return {
-        "person1": cast(person1),
-        "person2": cast(person2),
-        "mutual_friends": [m for m in mutual_friends]
+        "person1": person1.temp(),
+        "person2": person2.temp(),
+        "mutual_friends": [m.name for m in mutual_friends]  # TODO: what to show here?
     }, 200
 
-@app.get("/person/<person>")
-def person(person: str):
-    with open("resources/people.json", "r") as people_json:
-        people = json.load(people_json)
-
-    def get_person():
-        return next(filter(lambda p: p["name"] == person, people))
-
-    person = get_person()
+@app.get("/person/<name>")
+def get_person_info(name: str):
+    person = people.get_person_by_name(name=name)
 
     fruits = [
         "orange", "apple", "banana", "strawberry"
@@ -64,10 +49,10 @@ def person(person: str):
     ]
 
     return {
-        "username": person["name"],
-        "age": person["age"],
-        "fruits": [f for f in person["favouriteFood"] if f in fruits],
-        "vegetables": [f for f in person["favouriteFood"] if f in vegetables]
+        "username": person.name,
+        "age": person.age,
+        "fruits": [f for f in person.favouriteFood if f in fruits],
+        "vegetables": [f for f in person.favouriteFood if f in vegetables]
     }, 200
 
 if __name__ == "__main__":
