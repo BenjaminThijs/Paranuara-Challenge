@@ -6,6 +6,6 @@ setup(
     author='Benjamin Thijs',
     author_email='thijsbenjamin@live.be',
     packages=[
-        'Flask'
+        'Flask', 'parameterized', 'requests'
     ]
 )
