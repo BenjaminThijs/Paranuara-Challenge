@@ -1,0 +1,2 @@
+class NoSuchNameException(Exception):
+    pass
